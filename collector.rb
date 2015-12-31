@@ -25,7 +25,7 @@ client.filter(track: "NHK紅白") do |object|
     tweet = object
 
     id = tweet.id
-    dirname = File.join(__dir__, '2015', 'tweets', ((id / 10000).to_i * 10000).to_s)
+    dirname = File.join(__dir__, '2015', 'tweets', ((id / 100000000000).to_i * 100000000000).to_s)
 
     FileUtils.mkdir(dirname) unless File.exist?(dirname)
     File.write(File.join(dirname, "#{id}.json"), tweet.to_hash.to_json)

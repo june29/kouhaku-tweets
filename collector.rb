@@ -1,12 +1,15 @@
 require 'json'
 require 'logger'
 require 'bundler'
+require 'rainbow/ext/string'
 Bundler.require(:default)
 Dotenv.load
 
 LOGGER = Logger.new(STDOUT)
 LOGGER.formatter = proc { |severity, datetime, progname, msg| "#{msg}\n" }
 STDOUT.sync = true
+
+COLORS = %i(red green yellow blue magenta cyan white)
 
 client = Twitter::Streaming::Client.new do |config|
   config.consumer_key        = ENV["TWITTER_CONSUMER_KEY"]
@@ -27,7 +30,9 @@ client.filter(track: "NHK紅白") do |object|
     FileUtils.mkdir(dirname) unless File.exist?(dirname)
     File.write(File.join(dirname, "#{id}.json"), tweet.to_hash.to_json)
 
-    puts "[#{tweet.id}][#{(tweet.created_at + 60 * 60 * 9).strftime('%H:%M:%S')}] @#{tweet.user.screen_name}: #{tweet.text.gsub(/\n/, '')}"
+    name = tweet.user.screen_name
+
+    puts "[#{tweet.id}][#{(tweet.created_at + 60 * 60 * 9).strftime('%H:%M:%S')}] @#{tweet.user.screen_name}: #{tweet.text.gsub(/\n/, '')}".color(COLORS[name.size % COLORS.size])
   rescue => error
     LOGGER.info error
   end
